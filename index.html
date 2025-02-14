@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/phaser3-rex-plugins@latest/dist/rexvirtualjoystickplugin.min.js"></script>
+
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -23,7 +25,7 @@
             scene: { preload, create, update }
         };
 
-        let player, cursors;
+        let player, cursors, joystick;
         let moveX = 0, moveY = 0; // Управление с телефона
 
         const game = new Phaser.Game(config);
@@ -31,52 +33,45 @@
         function preload() {
             this.load.image('background', 'https://i.imgur.com/rUXe2Db.jpeg'); // Фон
             this.load.image('player', 'https://i.ibb.co/HDqC4Wvp/pixelplayer.png'); // Игрок
+            this.load.plugin('rexvirtualjoystickplugin', 'https://cdn.jsdelivr.net/npm/phaser3-rex-plugins@latest/dist/rexvirtualjoystickplugin.min.js', true);
         }
 
         function create() {
             this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background')
-                .setDisplaySize(window.innerWidth, window.innerHeight); // Делаем фон на весь экран
+                .setDisplaySize(window.innerWidth, window.innerHeight);
 
-            // Добавляем игрока
-            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player').setScale(0.3);
-            player.setCollideWorldBounds(true); // Ограничение по границам экрана
+            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player').setScale(0.5);
+            player.setCollideWorldBounds(true);
 
-            // Клавиатура
             cursors = this.input.keyboard.createCursorKeys();
 
-            // 🎮 Добавляем управление для телефона
-            this.input.on('pointerdown', function (pointer) {
-                if (pointer.x < window.innerWidth / 3) moveX = -1;
-                else if (pointer.x > (window.innerWidth / 3) * 2) moveX = 1;
-                else moveX = 0;
-
-                if (pointer.y < window.innerHeight / 3) moveY = -1;
-                else if (pointer.y > (window.innerHeight / 3) * 2) moveY = 1;
-                else moveY = 0;
-            });
-
-            this.input.on('pointerup', function () {
-                moveX = 0;
-                moveY = 0;
+            // 🎮 Виртуальный джойстик
+            joystick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
+                x: 100, // Центр джойстика (слева внизу)
+                y: window.innerHeight - 100,
+                radius: 50, // Радиус джойстика
+                base: this.add.circle(0, 0, 50, 0x888888), // Основание
+                thumb: this.add.circle(0, 0, 25, 0xffffff) // "Палец"
+            }).on('update', () => {
+                moveX = joystick.forceX; // Горизонтальное движение
+                moveY = joystick.forceY; // Вертикальное движение
             });
         }
 
-        function update() {
+        ffunction update() {
             const speed = 200;
             let velocityX = 0;
             let velocityY = 0;
 
-            // ПК-управление
             if (cursors.left.isDown) velocityX = -speed;
             if (cursors.right.isDown) velocityX = speed;
             if (cursors.up.isDown) velocityY = -speed;
             if (cursors.down.isDown) velocityY = speed;
 
-            // Мобильное управление
+            // 🎮 Движение от джойстика
             velocityX += moveX * speed;
             velocityY += moveY * speed;
 
-            // Фикс тряски (если персонаж не двигается, сбрасываем скорость)
             if (velocityX === 0 && velocityY === 0) {
                 player.setVelocity(0, 0);
             } else {
