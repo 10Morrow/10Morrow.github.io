@@ -3,88 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mini Game</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/phaser3-rex-plugins@latest/dist/rexvirtualjoystickplugin.min.js"></script>
+    <title>Обо мне</title>
     <style>
-        body { margin: 0; overflow: hidden; }
-        canvas { display: block; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 { color: #333; }
+        p { color: #666; }
+        .links a {
+            display: inline-block;
+            margin: 10px;
+            text-decoration: none;
+            color: #0073e6;
+            font-weight: bold;
+        }
+        .skills, .projects {
+            margin-top: 20px;
+        }
+        .skills ul, .projects ul {
+            list-style: none;
+            padding: 0;
+        }
+        .skills li, .projects li {
+            background: #0073e6;
+            color: white;
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        .projects li a {
+            color: white;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
-    <script>
-        const config = {
-            type: Phaser.AUTO,
-            width: window.innerWidth,
-            height: window.innerHeight,
-            physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
-            scene: { preload, create, update }
-        };
+    <div class="container">
+        <h1>Привет, я [ТВОЁ ИМЯ]!</h1>
+        <p>Я разработчик, энтузиаст и просто любитель кода.</p>
+        <p>Добро пожаловать на мою персональную страницу!</p>
 
-        let player, cursors, joystick;
-        let moveX = 0, moveY = 0; // ✅ Исправлено, добавлены переменные
+        <div class="links">
+            <a href="https://github.com/ТВОЙ_GITHUB" target="_blank">GitHub</a>
+            <a href="https://t.me/ТВОЙ_TELEGRAM" target="_blank">Telegram</a>
+            <a href="mailto:ТВОЙ_EMAIL">Связаться</a>
+        </div>
 
-        const game = new Phaser.Game(config);
+        <div class="skills">
+            <h2>Мои навыки</h2>
+            <ul>
+                <li>HTML</li>
+                <li>CSS</li>
+                <li>JavaScript</li>
+                <li>React</li>
+                <li>Node.js</li>
+            </ul>
+        </div>
 
-        function preload() {
-            this.load.image('background', 'https://i.imgur.com/rUXe2Db.jpeg'); // Фон
-            this.load.image('player', 'https://i.ibb.co/HDqC4Wvp/pixelplayer.png'); // Игрок
-            this.load.plugin('rexvirtualjoystickplugin', 'https://cdn.jsdelivr.net/npm/phaser3-rex-plugins@latest/dist/rexvirtualjoystickplugin.min.js', true);
-        }
-
-        function create() {
-            this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background')
-                .setDisplaySize(window.innerWidth, window.innerHeight);
-
-            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player').setScale(0.2);
-            player.setCollideWorldBounds(true);
-
-            cursors = this.input.keyboard.createCursorKeys();
-
-            // 🎮 Виртуальный джойстик
-            joystick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
-                x: 100, // Центр джойстика (слева внизу)
-                y: window.innerHeight - 100,
-                radius: 50, // Радиус джойстика
-                base: this.add.circle(0, 0, 50, 0x888888), // Основание
-                thumb: this.add.circle(0, 0, 25, 0xffffff) // "Палец"
-            });
-
-            joystick.on('update', () => {
-                moveX = joystick.forceX; // Горизонтальное движение
-                moveY = joystick.forceY; // Вертикальное движение
-            });
-        }
-
-        function update() {
-    const baseSpeed = 100; // ⚡ Уменьшили скорость
-    let velocityX = 0;
-    let velocityY = 0;
-
-    // 🖥 Управление с клавиатуры
-    if (cursors.left.isDown) velocityX = -baseSpeed;
-    if (cursors.right.isDown) velocityX = baseSpeed;
-    if (cursors.up.isDown) velocityY = -baseSpeed;
-    if (cursors.down.isDown) velocityY = baseSpeed;
-
-    // 🎮 Управление с джойстика (уменьшаем эффект)
-    velocityX += moveX * baseSpeed * 0.7; // Уменьшаем скорость джойстика
-    velocityY += moveY * baseSpeed * 0.7;
-
-    // ⚡ Ограничиваем скорость для плавности
-    if (velocityX > baseSpeed) velocityX = baseSpeed;
-    if (velocityX < -baseSpeed) velocityX = -baseSpeed;
-    if (velocityY > baseSpeed) velocityY = baseSpeed;
-    if (velocityY < -baseSpeed) velocityY = -baseSpeed;
-
-    // 🛑 Остановка, если не двигаемся
-    if (velocityX === 0 && velocityY === 0) {
-        player.setVelocity(0, 0);
-    } else {
-        player.setVelocity(velocityX, velocityY);
-    }
-}
-    </script>
+        <div class="projects">
+            <h2>Мои проекты</h2>
+            <ul>
+                <li><a href="https://github.com/ТВОЙ_GITHUB/проект1" target="_blank">Проект 1</a></li>
+                <li><a href="https://github.com/ТВОЙ_GITHUB/проект2" target="_blank">Проект 2</a></li>
+                <li><a href="https://github.com/ТВОЙ_GITHUB/проект3" target="_blank">Проект 3</a></li>
+            </ul>
+        </div>
+    </div>
 </body>
 </html>
-
