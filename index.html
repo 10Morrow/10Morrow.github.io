@@ -14,23 +14,17 @@
     <script>
         const config = {
             type: Phaser.AUTO,
-            width: 800, // Фиксированный размер (потом сделаем адаптивным)
-            height: 600,
+            width: window.innerWidth,
+            height: window.innerHeight,
             physics: {
                 default: 'arcade',
-                arcade: {
-                    gravity: { y: 0 },
-                    debug: false // Отключаем отладку физики, чтобы не было лишних линий
-                }
+                arcade: { gravity: { y: 0 }, debug: false }
             },
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            }
+            scene: { preload, create, update }
         };
 
         let player, cursors;
+        let moveX = 0, moveY = 0; // Управление с телефона
 
         const game = new Phaser.Game(config);
 
@@ -40,15 +34,31 @@
         }
 
         function create() {
-            // Фон
-            this.add.image(400, 300, 'background').setScale(1.5); // Подстрой под свой фон
+            this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background')
+                .setDisplaySize(window.innerWidth, window.innerHeight); // Делаем фон на весь экран
 
-            // Добавляем персонажа в центр
-            player = this.physics.add.sprite(400, 300, 'player');
-            player.setCollideWorldBounds(true); // Запрещаем выход за границы
+            // Добавляем игрока
+            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player');
+            player.setCollideWorldBounds(true); // Ограничение по границам экрана
 
-            // Управление с клавиатуры
+            // Клавиатура
             cursors = this.input.keyboard.createCursorKeys();
+
+            // 🎮 Добавляем управление для телефона
+            this.input.on('pointerdown', function (pointer) {
+                if (pointer.x < window.innerWidth / 3) moveX = -1;
+                else if (pointer.x > (window.innerWidth / 3) * 2) moveX = 1;
+                else moveX = 0;
+
+                if (pointer.y < window.innerHeight / 3) moveY = -1;
+                else if (pointer.y > (window.innerHeight / 3) * 2) moveY = 1;
+                else moveY = 0;
+            });
+
+            this.input.on('pointerup', function () {
+                moveX = 0;
+                moveY = 0;
+            });
         }
 
         function update() {
@@ -56,12 +66,22 @@
             let velocityX = 0;
             let velocityY = 0;
 
+            // ПК-управление
             if (cursors.left.isDown) velocityX = -speed;
             if (cursors.right.isDown) velocityX = speed;
             if (cursors.up.isDown) velocityY = -speed;
             if (cursors.down.isDown) velocityY = speed;
 
-            player.setVelocity(velocityX, velocityY);
+            // Мобильное управление
+            velocityX += moveX * speed;
+            velocityY += moveY * speed;
+
+            // Фикс тряски (если персонаж не двигается, сбрасываем скорость)
+            if (velocityX === 0 && velocityY === 0) {
+                player.setVelocity(0, 0);
+            } else {
+                player.setVelocity(velocityX, velocityY);
+            }
         }
     </script>
 </body>
