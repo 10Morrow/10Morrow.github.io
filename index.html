@@ -6,7 +6,6 @@
     <title>Mini Game</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/phaser3-rex-plugins@latest/dist/rexvirtualjoystickplugin.min.js"></script>
-
     <style>
         body { margin: 0; overflow: hidden; }
         canvas { display: block; }
@@ -18,15 +17,12 @@
             type: Phaser.AUTO,
             width: window.innerWidth,
             height: window.innerHeight,
-            physics: {
-                default: 'arcade',
-                arcade: { gravity: { y: 0 }, debug: false }
-            },
+            physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
             scene: { preload, create, update }
         };
 
         let player, cursors, joystick;
-        let moveX = 0, moveY = 0; // Управление с телефона
+        let moveX = 0, moveY = 0; // ✅ Исправлено, добавлены переменные
 
         const game = new Phaser.Game(config);
 
@@ -52,13 +48,15 @@
                 radius: 50, // Радиус джойстика
                 base: this.add.circle(0, 0, 50, 0x888888), // Основание
                 thumb: this.add.circle(0, 0, 25, 0xffffff) // "Палец"
-            }).on('update', () => {
+            });
+
+            joystick.on('update', () => {
                 moveX = joystick.forceX; // Горизонтальное движение
                 moveY = joystick.forceY; // Вертикальное движение
             });
         }
 
-        ffunction update() {
+        function update() {
             const speed = 200;
             let velocityX = 0;
             let velocityY = 0;
@@ -81,3 +79,4 @@
     </script>
 </body>
 </html>
+
