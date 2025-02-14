@@ -38,7 +38,7 @@
                 .setDisplaySize(window.innerWidth, window.innerHeight); // Делаем фон на весь экран
 
             // Добавляем игрока
-            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player');
+            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player').setScale(0.3);
             player.setCollideWorldBounds(true); // Ограничение по границам экрана
 
             // Клавиатура
