@@ -4,15 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mini Game</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/phaser/3.60.0/phaser.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
 </head>
 <body>
-    <h1>Добро пожаловать в игру!</h1>
-    <button id="startGame">Начать игру</button>
-
     <script>
-        document.getElementById("startGame").addEventListener("click", function() {
-            alert("Игра скоро начнется!");
-        });
+        const config = {
+            type: Phaser.AUTO,
+            width: window.innerWidth,
+            height: window.innerHeight,
+            physics: { default: 'arcade', arcade: { gravity: { y: 0 } } },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        let player, cursors;
+        const game = new Phaser.Game(config);
+
+        function preload() {
+            this.load.image('background', 'https://i.imgur.com/rUXe2Db.jpeg'); // Фон
+            this.load.image('player', 'https://i.ibb.co/HDqC4Wvp/pixelplayer.png'); // Игрок
+        }
+
+        function create() {
+            this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background').setScale(2);
+
+            player = this.physics.add.sprite(400, 300, 'player');
+            player.setCollideWorldBounds(true);
+
+            cursors = this.input.keyboard.createCursorKeys();
+        }
+
+        function update() {
+            player.setVelocity(0);
+
+            if (cursors.left.isDown) {
+                player.setVelocityX(-200);
+            } else if (cursors.right.isDown) {
+                player.setVelocityX(200);
+            }
+
+            if (cursors.up.isDown) {
+                player.setVelocityY(-200);
+            } else if (cursors.down.isDown) {
+                player.setVelocityY(200);
+            }
+        }
     </script>
 </body>
 </html>
