@@ -36,7 +36,7 @@
             this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'background')
                 .setDisplaySize(window.innerWidth, window.innerHeight);
 
-            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player').setScale(0.5);
+            player = this.physics.add.sprite(window.innerWidth / 2, window.innerHeight / 2, 'player').setScale(0.2);
             player.setCollideWorldBounds(true);
 
             cursors = this.input.keyboard.createCursorKeys();
@@ -57,25 +57,33 @@
         }
 
         function update() {
-            const speed = 200;
-            let velocityX = 0;
-            let velocityY = 0;
+    const baseSpeed = 100; // ⚡ Уменьшили скорость
+    let velocityX = 0;
+    let velocityY = 0;
 
-            if (cursors.left.isDown) velocityX = -speed;
-            if (cursors.right.isDown) velocityX = speed;
-            if (cursors.up.isDown) velocityY = -speed;
-            if (cursors.down.isDown) velocityY = speed;
+    // 🖥 Управление с клавиатуры
+    if (cursors.left.isDown) velocityX = -baseSpeed;
+    if (cursors.right.isDown) velocityX = baseSpeed;
+    if (cursors.up.isDown) velocityY = -baseSpeed;
+    if (cursors.down.isDown) velocityY = baseSpeed;
 
-            // 🎮 Движение от джойстика
-            velocityX += moveX * speed;
-            velocityY += moveY * speed;
+    // 🎮 Управление с джойстика (уменьшаем эффект)
+    velocityX += moveX * baseSpeed * 0.7; // Уменьшаем скорость джойстика
+    velocityY += moveY * baseSpeed * 0.7;
 
-            if (velocityX === 0 && velocityY === 0) {
-                player.setVelocity(0, 0);
-            } else {
-                player.setVelocity(velocityX, velocityY);
-            }
-        }
+    // ⚡ Ограничиваем скорость для плавности
+    if (velocityX > baseSpeed) velocityX = baseSpeed;
+    if (velocityX < -baseSpeed) velocityX = -baseSpeed;
+    if (velocityY > baseSpeed) velocityY = baseSpeed;
+    if (velocityY < -baseSpeed) velocityY = -baseSpeed;
+
+    // 🛑 Остановка, если не двигаемся
+    if (velocityX === 0 && velocityY === 0) {
+        player.setVelocity(0, 0);
+    } else {
+        player.setVelocity(velocityX, velocityY);
+    }
+}
     </script>
 </body>
 </html>
